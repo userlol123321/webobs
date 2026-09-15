@@ -91,7 +91,13 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
     e.preventDefault();
     const store = useSceneStore.getState();
     const src = store.sources[sourceId];
-    if (!src) return;
+    if (!src || src.locked) return;
+    // First interaction selects the source instead of dragging it, so a
+    // stray click never yanks the box (or a fullscreen background) around.
+    if (mode === 'move' && !store.selectedSourceIds.includes(sourceId)) {
+      store.setSelectedSources([sourceId]);
+      return;
+    }
     if (!store.selectedSourceIds.includes(sourceId)) store.setSelectedSources([sourceId]);
     dragRef.current = {
       mode,
@@ -101,9 +107,16 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
     };
   };
 
+  const onFramePointerDown = (e: React.MouseEvent) => {
+    // Clicking empty preview space clears the selection (OBS behavior).
+    if (e.target === e.currentTarget) {
+      useSceneStore.getState().setSelectedSources([]);
+    }
+  };
+
   return (
     <div className="preview">
-      <div className="preview-frame" ref={frameRef}>
+      <div className="preview-frame" ref={frameRef} onMouseDown={onFramePointerDown}>
         <canvas ref={canvasRef} className="preview-canvas" tabIndex={0} />
         {scale > 0 &&
           selected.map((id) => {

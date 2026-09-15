@@ -145,14 +145,16 @@ export class Compositor {
         gl,
         this.compositeProgram,
         this.buffers,
-        sourceTexture,
+        sourceTexture.texture,
         width,
         height,
         item.x,
         item.y,
         item.width,
         item.height,
-        item.opacity ?? 1
+        item.opacity ?? 1,
+        {},
+        sourceTexture.flipped
       );
     }
   }
@@ -162,12 +164,12 @@ export class Compositor {
     source: WebGLTexture,
     width: number,
     height: number
-  ): WebGLTexture | null {
+  ): { texture: WebGLTexture; flipped: boolean } | null {
     const gl = this.gl;
     if (!gl || !this.fboA || !this.fboB) return null;
 
     const filters = (item.filters ?? []).filter((f) => f.type === 'chroma-key' || f.type === 'color-correction');
-    if (filters.length === 0) return source;
+    if (filters.length === 0) return { texture: source, flipped: false };
 
     let current = source;
     let writeFbo = this.fboA;
@@ -182,7 +184,7 @@ export class Compositor {
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       const params = { ...DEFAULT_FILTER_PARAMS[filter.type], ...filter.params };
-      drawQuad(gl, program, this.buffers!, current, width, height, 0, 0, width, height, 1, params);
+      drawQuad(gl, program, this.buffers!, current, width, height, 0, 0, width, height, 1, params, index > 0);
 
       current = writeFbo.texture;
       writeFbo = index % 2 === 0 ? this.fboB! : this.fboA!;
@@ -191,7 +193,7 @@ export class Compositor {
     // Restore target framebuffer & viewport
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, width, height);
-    return current;
+    return { texture: current, flipped: true };
   }
 
   dispose(): void {

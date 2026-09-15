@@ -115,7 +115,8 @@ export function drawQuad(
   quadWidth: number,
   quadHeight: number,
   opacity = 1,
-  uniforms: ProgramUniforms = {}
+  uniforms: ProgramUniforms = {},
+  flipV = false
 ): void {
   gl.useProgram(program);
 
@@ -126,6 +127,12 @@ export function drawQuad(
     x + quadWidth, y + quadHeight,
   ]);
 
+  // Textures produced by a framebuffer are stored bottom-up relative to screen
+  // space; flip v so they composite the right way round.
+  const texCoords = new Float32Array(
+    flipV ? [0, 1, 1, 1, 0, 0, 1, 0] : [0, 0, 1, 0, 0, 1, 1, 1]
+  );
+
   const posLoc = gl.getAttribLocation(program, 'a_position');
   const texLoc = gl.getAttribLocation(program, 'a_texCoord');
 
@@ -135,6 +142,7 @@ export function drawQuad(
   gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texCoordBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(texLoc);
   gl.vertexAttribPointer(texLoc, 2, gl.FLOAT, false, 0, 0);
 
