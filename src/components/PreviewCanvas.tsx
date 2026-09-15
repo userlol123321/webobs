@@ -8,11 +8,12 @@ import { useMenuPosition } from '../hooks/useMenuPosition';
 import { removeSourceMedia } from '../engine/sourceMedia';
 import './preview.css';
 
-interface DragState {
+interface PointerState {
   mode: 'move' | 'resize';
   sourceId: string;
   startMouse: { x: number; y: number };
   startTransform: Transform;
+  active: boolean;
 }
 
 export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement | null> }) {
@@ -24,7 +25,7 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
 
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(0);
-  const dragRef = useRef<DragState | null>(null);
+  const pointerRef = useRef<PointerState | null>(null);
   const scaleRef = useRef(1);
   const { position, setPosition } = useMenuPosition();
   const [contextSourceId, setContextSourceId] = useState<string | null>(null);
@@ -50,29 +51,33 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      const drag = dragRef.current;
-      if (!drag) return;
+      const p = pointerRef.current;
+      if (!p) return;
+      const dx = e.clientX - p.startMouse.x;
+      const dy = e.clientY - p.startMouse.y;
+      // OBS behavior: press selects immediately, dragging starts once the
+      // pointer actually moves a few pixels (so clicks don't nudge sources).
+      if (!p.active && Math.hypot(dx, dy) < 3) return;
+      p.active = true;
       const s = scaleRef.current;
       if (s <= 0) return;
-      const dx = (e.clientX - drag.startMouse.x) / s;
-      const dy = (e.clientY - drag.startMouse.y) / s;
       const store = useSceneStore.getState();
-      const src = store.sources[drag.sourceId];
+      const src = store.sources[p.sourceId];
       if (!src || src.locked) return;
-      if (drag.mode === 'move') {
-        store.updateSourceTransform(drag.sourceId, {
-          x: drag.startTransform.x + dx,
-          y: drag.startTransform.y + dy,
+      if (p.mode === 'move') {
+        store.updateSourceTransform(p.sourceId, {
+          x: p.startTransform.x + dx / s,
+          y: p.startTransform.y + dy / s,
         });
       } else {
-        store.updateSourceTransform(drag.sourceId, {
-          width: Math.max(10, drag.startTransform.width + dx),
-          height: Math.max(10, drag.startTransform.height + dy),
+        store.updateSourceTransform(p.sourceId, {
+          width: Math.max(10, p.startTransform.width + dx / s),
+          height: Math.max(10, p.startTransform.height + dy / s),
         });
       }
     };
     const onUp = () => {
-      dragRef.current = null;
+      pointerRef.current = null;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
@@ -107,23 +112,35 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
     return null;
   };
 
+  const onBegin = (
+    e: React.MouseEvent,
+    sourceId: string,
+    mode: 'move' | 'resize'
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const store = useSceneStore.getState();
+    const src = store.sources[sourceId];
+    if (!src || src.locked) return;
+    if (!store.selectedSourceIds.includes(sourceId)) store.setSelectedSources([sourceId]);
+    pointerRef.current = {
+      mode,
+      sourceId,
+      startMouse: { x: e.clientX, y: e.clientY },
+      startTransform: { ...src.transform },
+      active: false,
+    };
+  };
+
   const onFramePointerDown = (e: React.MouseEvent) => {
     const hitId = hitTest(e.clientX, e.clientY);
     const store = useSceneStore.getState();
     if (hitId) {
-      // Clicking a source selects it. If it was already selected, start dragging.
-      if (store.selectedSourceIds.includes(hitId)) {
-        const src = store.sources[hitId];
-        if (src && !src.locked) {
-          dragRef.current = {
-            mode: 'move',
-            sourceId: hitId,
-            startMouse: { x: e.clientX, y: e.clientY },
-            startTransform: { ...src.transform },
-          };
-        }
-      } else {
+      const src = store.sources[hitId];
+      if (src?.locked) {
         store.setSelectedSources([hitId]);
+      } else if (src) {
+        onBegin(e, hitId, 'move');
       }
     } else {
       store.setSelectedSources([]);
@@ -206,18 +223,7 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
   };
 
   const startResize = (e: React.MouseEvent, sourceId: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const store = useSceneStore.getState();
-    const src = store.sources[sourceId];
-    if (!src || src.locked) return;
-    if (!store.selectedSourceIds.includes(sourceId)) store.setSelectedSources([sourceId]);
-    dragRef.current = {
-      mode: 'resize',
-      sourceId,
-      startMouse: { x: e.clientX, y: e.clientY },
-      startTransform: { ...src.transform },
-    };
+    onBegin(e, sourceId, 'resize');
   };
 
   return (
@@ -242,19 +248,7 @@ export function PreviewCanvas({ canvasRef }: { canvasRef: RefObject<HTMLCanvasEl
                 style={style}
                 onMouseDown={(e) => {
                   e.stopPropagation();
-                  const store = useSceneStore.getState();
-                  if (store.selectedSourceIds.includes(id)) {
-                    if (!src.locked) {
-                      dragRef.current = {
-                        mode: 'move',
-                        sourceId: id,
-                        startMouse: { x: e.clientX, y: e.clientY },
-                        startTransform: { ...src.transform },
-                      };
-                    }
-                  } else {
-                    store.setSelectedSources([id]);
-                  }
+                  onBegin(e, id, 'move');
                 }}
               >
                 <span className="preview-box-label">

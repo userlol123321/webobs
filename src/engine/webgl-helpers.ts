@@ -99,9 +99,18 @@ export function createQuadBuffer(gl: WebGLRenderingContext): VertexBuffer {
   return { buffer, texCoordBuffer };
 }
 
+export interface UVRect {
+  u0: number;
+  v0: number;
+  u1: number;
+  v1: number;
+}
+
 /**
  * Draw a quad for rect (x, y, width, height) in canvas pixel space.
  * (0,0) is top-left. Texture will be drawn upright when flipY is enabled on upload.
+ * When `rotation` (degrees, clockwise) is non-zero the quad is rotated around
+ * its center. `uv` allows sampling a sub-rectangle of the source (for crop).
  */
 export function drawQuad(
   gl: WebGLRenderingContext,
@@ -116,21 +125,51 @@ export function drawQuad(
   quadHeight: number,
   opacity = 1,
   uniforms: ProgramUniforms = {},
-  flipV = false
+  flipV = false,
+  rotation = 0,
+  uv: UVRect = { u0: 0, v0: 0, u1: 1, v1: 1 }
 ): void {
   gl.useProgram(program);
 
+  const cx = x + quadWidth / 2;
+  const cy = y + quadHeight / 2;
+  let corners = [
+    { px: x, py: y },
+    { px: x + quadWidth, py: y },
+    { px: x, py: y + quadHeight },
+    { px: x + quadWidth, py: y + quadHeight },
+  ];
+
+  if (rotation !== 0) {
+    const rad = (rotation * Math.PI) / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    // CSS/HTML canvas rotation is clockwise because y grows downward.
+    corners = corners.map(({ px, py }) => {
+      const dx = px - cx;
+      const dy = py - cy;
+      return {
+        px: cx + dx * cos - dy * sin,
+        py: cy + dx * sin + dy * cos,
+      };
+    });
+  }
+
   const positions = new Float32Array([
-    x, y,
-    x + quadWidth, y,
-    x, y + quadHeight,
-    x + quadWidth, y + quadHeight,
+    corners[0].px, corners[0].py,
+    corners[1].px, corners[1].py,
+    corners[2].px, corners[2].py,
+    corners[3].px, corners[3].py,
   ]);
 
   // Textures produced by a framebuffer are stored bottom-up relative to screen
   // space; flip v so they composite the right way round.
+  const base = flipV ? [0, 1, 1, 1, 0, 0, 1, 0] : [0, 0, 1, 0, 0, 1, 1, 1];
   const texCoords = new Float32Array(
-    flipV ? [0, 1, 1, 1, 0, 0, 1, 0] : [0, 0, 1, 0, 0, 1, 1, 1]
+    base.map((coord, i) => {
+      const t = i % 2 === 0 ? uv.u0 + coord * (uv.u1 - uv.u0) : uv.v0 + coord * (uv.v1 - uv.v0);
+      return t;
+    })
   );
 
   const posLoc = gl.getAttribLocation(program, 'a_position');

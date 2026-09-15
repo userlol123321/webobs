@@ -11,6 +11,7 @@ import {
   drawQuad,
   type TextureElement,
   type VertexBuffer,
+  type UVRect,
 } from './webgl-helpers';
 import type { VideoFilterType } from '../types';
 
@@ -29,6 +30,8 @@ export interface RenderItem {
   width: number;
   height: number;
   opacity?: number;
+  rotation?: number;
+  uv?: UVRect;
   filters?: FilterSpec[];
 }
 
@@ -162,7 +165,9 @@ export class Compositor {
         item.height,
         item.opacity ?? 1,
         {},
-        sourceTexture.flipped
+        sourceTexture.flipped,
+        item.rotation ?? 0,
+        item.uv
       );
     }
 
@@ -199,7 +204,7 @@ export class Compositor {
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       const params = { ...DEFAULT_FILTER_PARAMS[filter.type], ...filter.params };
-      drawQuad(gl, program, this.buffers!, current, width, height, 0, 0, width, height, 1, params, index > 0);
+      drawQuad(gl, program, this.buffers!, current, width, height, 0, 0, width, height, 1, params, index > 0, 0);
 
       current = writeFbo.texture;
       writeFbo = index % 2 === 0 ? this.fboB! : this.fboA!;
