@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSceneStore } from '../../stores/sceneStore';
 import './menubar.css';
 
 interface MenuItem {
@@ -33,16 +32,7 @@ export function MenuBar() {
   const menus: MenuDef[] = [
     {
       label: 'File',
-      items: [
-        {
-          label: 'New Scene Collection',
-          action: () => {
-            useSceneStore.setState({ scenes: [], activeSceneId: null, sources: {}, selectedSourceIds: [] });
-          },
-        },
-        { separator: true },
-        { label: 'Exit', action: () => window.close() },
-      ],
+      items: [{ label: 'Exit', action: () => window.close() }],
     },
     { label: 'Edit', items: [{ label: 'Undo', disabled: true }, { label: 'Redo', disabled: true }] },
     {
@@ -68,10 +58,6 @@ export function MenuBar() {
     {
       label: 'Profile',
       items: [{ label: 'New', disabled: true }, { label: 'Import', disabled: true }],
-    },
-    {
-      label: 'Scene Collection',
-      items: [{ label: 'New', disabled: true }],
     },
     {
       label: 'Tools',

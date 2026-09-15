@@ -117,6 +117,33 @@ export function PropertiesPanel() {
           Center Both
         </button>
       </div>
+
+      {source.type === 'camera' && (
+        <>
+          <div className="properties-title">Webcam Position</div>
+          <div className="properties-actions">
+            {(['TL', 'TR', 'BL', 'BR'] as const).map((corner) => {
+              const margin = 24;
+              const positions: Record<string, { x: number; y: number }> = {
+                TL: { x: margin, y: margin },
+                TR: { x: canvasWidth - t.width - margin, y: margin },
+                BL: { x: margin, y: canvasHeight - t.height - margin },
+                BR: { x: canvasWidth - t.width - margin, y: canvasHeight - t.height - margin },
+              };
+              return (
+                <button
+                  key={corner}
+                  className="properties-action"
+                  onClick={() => view.updateSourceTransform(source.id, positions[corner])}
+                  title={`Snap to ${corner} corner (24px margin)`}
+                >
+                  {corner}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

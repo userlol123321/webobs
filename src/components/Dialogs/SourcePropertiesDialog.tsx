@@ -29,30 +29,32 @@ export function SourcePropertiesDialog({ sourceId, onClose }: { sourceId: string
 
   const media = source ? getSourceMedia(sourceId) : undefined;
 
-  const [text, setText] = useState({
-    text: '',
-    fontSize: DEFAULT_TEXT_OPTIONS.fontSize ?? 48,
-    color: '#ffffff',
-    backgroundColor: 'transparent',
-    bold: false,
-    outline: true,
-  } as LocalTextOptions);
+  const [text, setText] = useState<LocalTextOptions>({
+    text: source?.textOptions?.text ?? '',
+    fontSize: source?.textOptions?.fontSize ?? DEFAULT_TEXT_OPTIONS.fontSize ?? 48,
+    color: source?.textOptions?.color ?? '#ffffff',
+    backgroundColor: source?.textOptions?.backgroundColor ?? 'transparent',
+    bold: source?.textOptions?.bold ?? false,
+    outline: source?.textOptions?.outline ?? true,
+  });
 
-  const [bgColor, setBgColor] = useState('#000000');
+  const [bgColor, setBgColor] = useState(source?.color ?? '#000000');
 
   if (!source) return null;
 
   const applyText = () => {
-    const canvas = document.createElement('canvas');
-    canvas.id = sourceId;
-    renderTextCanvas(canvas, {
+    const options = {
+      ...DEFAULT_TEXT_OPTIONS,
       text: text.text,
       fontSize: text.fontSize,
       color: text.color,
       backgroundColor: text.backgroundColor,
       bold: text.bold,
       outline: text.outline,
-    });
+    };
+    const canvas = document.createElement('canvas');
+    canvas.id = sourceId;
+    renderTextCanvas(canvas, options);
     registerSourceMedia(sourceId, {
       element: canvas,
       kind: 'canvas',
@@ -60,10 +62,12 @@ export function SourcePropertiesDialog({ sourceId, onClose }: { sourceId: string
       height: canvas.height,
     });
     markCanvasDirty(sourceId);
+    useSceneStore.getState().updateSourceMeta(sourceId, { textOptions: options });
   };
 
   const applyColor = () => {
-    const canvas = createColorCanvas(bgColor.startsWith('#') ? bgColor : `#${bgColor}`);
+    const resolved = bgColor.startsWith('#') ? bgColor : `#${bgColor}`;
+    const canvas = createColorCanvas(resolved);
     canvas.id = sourceId;
     registerSourceMedia(sourceId, {
       element: canvas,
@@ -72,6 +76,7 @@ export function SourcePropertiesDialog({ sourceId, onClose }: { sourceId: string
       height: canvas.height,
     });
     markCanvasDirty(sourceId);
+    useSceneStore.getState().updateSourceMeta(sourceId, { color: resolved });
   };
 
   return (

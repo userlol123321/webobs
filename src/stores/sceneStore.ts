@@ -23,6 +23,7 @@ interface SceneState {
   toggleVisible: (sourceId: string) => void;
   toggleLocked: (sourceId: string) => void;
   updateSourceTransform: (sourceId: string, rect: Partial<Transform>) => void;
+  updateSourceMeta: (sourceId: string, patch: Partial<Source>) => void;
   setSelectedSources: (ids: string[]) => void;
 
   addFilter: (sourceId: string, filter: Omit<VideoFilter, 'id'>) => void;
@@ -185,6 +186,15 @@ export const useSceneStore = create<SceneState>((set, get) => ({
           ...state.sources,
           [sourceId]: { ...src, transform: { ...src.transform, ...rect } },
         },
+      };
+    }),
+
+  updateSourceMeta: (sourceId, patch) =>
+    set((state) => {
+      const src = state.sources[sourceId];
+      if (!src) return state;
+      return {
+        sources: { ...state.sources, [sourceId]: { ...src, ...patch } },
       };
     }),
 

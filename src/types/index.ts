@@ -47,6 +47,20 @@ export interface VideoFilter {
   params: Record<string, number>;
 }
 
+export interface TextOptions {
+  text: string;
+  fontFamily?: string;
+  fontSize?: number;
+  color?: string;
+  backgroundColor?: string;
+  bold?: boolean;
+  outline?: boolean;
+  outlineColor?: string;
+  outlineWidth?: number;
+  align?: 'left' | 'center' | 'right';
+  vertical?: 'top' | 'center' | 'bottom';
+}
+
 export interface Source {
   id: string;
   type: SourceType;
@@ -57,6 +71,8 @@ export interface Source {
   filters: VideoFilter[];
   volume: number;
   muted: boolean;
+  textOptions?: TextOptions;
+  color?: string;
   children?: string[];
 }
 

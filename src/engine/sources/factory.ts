@@ -1,18 +1,7 @@
 import { useSettingsStore } from '../../stores/settingsStore';
+import type { TextOptions } from '../../types';
 
-export interface TextSourceOptions {
-  text: string;
-  fontFamily?: string;
-  fontSize?: number;
-  color?: string;
-  backgroundColor?: string;
-  bold?: boolean;
-  outline?: boolean;
-  outlineColor?: string;
-  outlineWidth?: number;
-  align?: 'left' | 'center' | 'right';
-  vertical?: 'top' | 'center' | 'bottom';
-}
+export type TextSourceOptions = TextOptions;
 
 export const DEFAULT_TEXT_OPTIONS: TextSourceOptions = {
   text: 'Text Source',

@@ -5,10 +5,10 @@ import { Dock } from './Dock';
 import { useCompositor } from '../../hooks/useCompositor';
 import { useAudioMeters } from '../../hooks/useAudioMeters';
 import { useRecorderManager } from '../../hooks/useRecorderManager';
+import { useLayoutPersistence } from '../../hooks/useLayoutPersistence';
 import { useHotkeys, isRecordingActive } from '../../hooks/useHotkeys';
 import { ResilientRecorder } from '../../engine/recorder/ResilientRecorder';
 import { PreviewCanvas } from '../PreviewCanvas';
-import { ScenesPanel } from '../Panels/ScenesPanel';
 import { SourcesPanel } from '../Panels/SourcesPanel';
 import { AudioMixerPanel } from '../Panels/AudioMixerPanel';
 import { TransitionsPanel } from '../Panels/TransitionsPanel';
@@ -24,6 +24,7 @@ export function AppLayout() {
 
   const controller = useCompositor(canvasRef);
   useAudioMeters();
+  useLayoutPersistence();
   const recorder = useRecorderManager(controller.getStream);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -48,9 +49,6 @@ export function AppLayout() {
 
       <div className="app-main">
         <aside className="app-left">
-          <Dock title="Scenes">
-            <ScenesPanel />
-          </Dock>
           <Dock title="Sources">
             <SourcesPanel />
           </Dock>

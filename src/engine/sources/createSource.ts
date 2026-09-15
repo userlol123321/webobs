@@ -15,6 +15,7 @@ import {
 export interface SourceCreationOptions {
   text?: TextSourceOptions;
   color?: string;
+  stream?: MediaStream;
 }
 
 function fullRect(): Transform {
@@ -24,7 +25,7 @@ function fullRect(): Transform {
     y: 0,
     width: canvasWidth,
     height: canvasHeight,
-    rotation: 0,
+    rotation: 180,
     cropLeft: 0,
     cropTop: 0,
     cropRight: 0,
@@ -42,7 +43,7 @@ function cornerOverlayRect(fraction = 0.3): Transform {
     y: canvasHeight - h - margin,
     width: w,
     height: h,
-    rotation: 0,
+    rotation: 180,
     cropLeft: 0,
     cropTop: 0,
     cropRight: 0,
@@ -98,7 +99,7 @@ export async function createSourceForType(
 
   switch (type) {
     case 'screen': {
-      const s = await requestScreen();
+      const s = opts?.stream ?? (await requestScreen());
       if (!s) return null;
       stream = s;
       element = createVideoElementForStream(s);
@@ -111,7 +112,7 @@ export async function createSourceForType(
       break;
     }
     case 'camera': {
-      const s = await requestCamera();
+      const s = opts?.stream ?? (await requestCamera());
       if (!s) return null;
       stream = s;
       element = createVideoElementForStream(s);
@@ -181,6 +182,8 @@ export async function createSourceForType(
     locked: false,
     transform,
     filters: [],
+    textOptions: type === 'text' ? (opts?.text ?? DEFAULT_TEXT_OPTIONS) : undefined,
+    color: type === 'color' ? (opts?.color ?? '#000000') : undefined,
     volume: 1,
     muted: false,
   };

@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react';
 import type { ResourceState } from '../types';
-import {
-  registerSourceMedia,
-  createVideoElementForStream,
-} from '../engine/sourceMedia';
 import { getAudioMixer } from '../engine/audio/AudioMixer';
+import { createSourceForType, type SourceCreationOptions } from '../engine/sources/createSource';
+import { loadLayout, type SavedSource } from '../engine/layoutStorage';
 import { useSceneStore } from '../stores/sceneStore';
 import { useAudioStore } from '../stores/audioStore';
 import { useSettingsStore } from '../stores/settingsStore';
@@ -24,13 +22,12 @@ const initialState: ActivationStatus = {
   message: 'Ready to start your studio',
 };
 
+const savedLayout = loadLayout();
+
 export function useAppInit() {
   const [status, setStatus] = useState<ActivationStatus>(initialState);
 
   const activate = useCallback(async (): Promise<void> => {
-    const sceneStore = useSceneStore.getState();
-    const settings = useSettingsStore.getState();
-
     // 1) Screen capture — requires user gesture; fatal if cancelled/denied.
     setStatus((s) => ({ ...s, screen: 'activating', message: 'Waiting for screen sharing…' }));
     let screenStream: MediaStream;
@@ -79,87 +76,58 @@ export function useAppInit() {
     const mixer = getAudioMixer();
     await mixer.resume();
 
-    // Build the default scene + sources
-    const width = settings.canvasWidth;
-    const height = settings.canvasHeight;
-
-    const screenId = generateId('src');
-    const screenVideo = createVideoElementForStream(screenStream);
-    registerSourceMedia(screenId, {
-      element: screenVideo,
-      kind: 'video',
-      stream: screenStream,
-      width,
-      height,
-    });
-    sceneStore.addSource({
-      id: screenId,
-      type: 'screen',
-      name: 'Display Capture',
-      visible: true,
-      locked: false,
-      transform: {
-        x: 0,
-        y: 0,
-        width,
-        height,
-        rotation: 0,
-        cropLeft: 0,
-        cropTop: 0,
-        cropRight: 0,
-        cropBottom: 0,
-      },
-      filters: [],
-      volume: 1,
-      muted: false,
-    });
-    // System audio from the shared screen/tab
-    const screenAudioTracks = screenStream.getAudioTracks();
-    if (screenAudioTracks.length > 0) {
-      mixer.addChannel(screenId, screenStream, 1, false);
-      useAudioStore.getState().addChannel({
-        id: screenId,
-        name: 'Display Capture',
-        volume: 1,
-        muted: false,
+    if (savedLayout) {
+      const s = savedLayout.settings;
+      useSettingsStore.setState({
+        transitionType: s.transitionType,
+        transitionDuration: s.transitionDuration,
       });
+      useSettingsStore.getState().setResolution(s.resolution.width, s.resolution.height);
+      useSettingsStore.getState().setFps(s.fps);
+      useSettingsStore.getState().setFormat(s.format);
+      useSettingsStore.getState().setBitrate(s.videoBitrate, s.audioBitrate);
     }
 
-    // Camera overlay (bottom-right, ~30% width)
-    if (cameraStream) {
-      const camId = generateId('src');
-      const camVideo = createVideoElementForStream(cameraStream);
-      registerSourceMedia(camId, {
-        element: camVideo,
-        kind: 'video',
-        stream: cameraStream,
-        width: 1280,
-        height: 720,
-      });
-      const camW = Math.round(width * 0.3);
-      const camH = Math.round((camW * 720) / 1280) * (cameraStream.getVideoTracks()[0] ? 1 : 1);
-      const tightCamH = Math.min(camH, Math.round(height * 0.4));
-      sceneStore.addSource({
-        id: camId,
-        type: 'camera',
-        name: 'Webcam',
-        visible: true,
-        locked: false,
-        transform: {
-          x: width - camW - 24,
-          y: height - tightCamH - 24,
-          width: camW,
-          height: tightCamH,
-          rotation: 0,
-          cropLeft: 0,
-          cropTop: 0,
-          cropRight: 0,
-          cropBottom: 0,
-        },
-        filters: [],
-        volume: 1,
-        muted: false,
-      });
+    useSceneStore.getState().addScene(savedLayout?.sceneName ?? 'Scene 1');
+
+    const optsFor = (saved: SavedSource): SourceCreationOptions => {
+      switch (saved.type) {
+        case 'screen':
+          return { stream: screenStream };
+        case 'camera':
+          return { stream: cameraStream ?? undefined };
+        case 'text':
+          return { text: saved.textOptions };
+        case 'color':
+          return { color: saved.color };
+        default:
+          return {};
+      }
+    };
+
+    if (savedLayout) {
+      for (const saved of savedLayout.sources) {
+        if (saved.type === 'image') continue;
+        const created = await createSourceForType(saved.type, optsFor(saved));
+        if (!created) continue;
+        useSceneStore.getState().addSource(created);
+        useSceneStore.getState().updateSourceMeta(created.id, {
+          name: saved.name,
+          visible: saved.visible,
+          locked: saved.locked,
+          transform: saved.transform,
+          filters: saved.filters,
+          textOptions: saved.textOptions,
+          color: saved.color,
+        });
+      }
+    } else {
+      const screenCreated = await createSourceForType('screen', { stream: screenStream });
+      if (screenCreated) useSceneStore.getState().addSource(screenCreated);
+      if (cameraStream) {
+        const camCreated = await createSourceForType('camera', { stream: cameraStream });
+        if (camCreated) useSceneStore.getState().addSource(camCreated);
+      }
     }
 
     // Microphone channel
