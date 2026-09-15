@@ -46,9 +46,13 @@ export class Compositor {
   private textures = new Map<string, WebGLTexture>();
   private fboA: { framebuffer: WebGLFramebuffer; texture: WebGLTexture } | null = null;
   private fboB: { framebuffer: WebGLFramebuffer; texture: WebGLTexture } | null = null;
+  private recordCanvas: HTMLCanvasElement;
+  private recordCtx: CanvasRenderingContext2D | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.recordCanvas = document.createElement('canvas');
+    this.recordCtx = this.recordCanvas.getContext('2d');
   }
 
   init(width: number, height: number): void {
@@ -74,6 +78,8 @@ export class Compositor {
 
     this.fboA = createFramebufferTarget(gl, width, height);
     this.fboB = createFramebufferTarget(gl, width, height);
+    this.recordCanvas.width = width;
+    this.recordCanvas.height = height;
 
     gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -88,6 +94,8 @@ export class Compositor {
     gl.viewport(0, 0, width, height);
     this.fboA = createFramebufferTarget(gl, width, height);
     this.fboB = createFramebufferTarget(gl, width, height);
+    this.recordCanvas.width = width;
+    this.recordCanvas.height = height;
   }
 
   registerTexture(id: string): boolean {
@@ -108,7 +116,7 @@ export class Compositor {
   }
 
   getStream(fps = 30): MediaStream {
-    return this.canvas.captureStream(fps);
+    return this.recordCanvas.captureStream(fps);
   }
 
   render(items: RenderItem[]): void {
@@ -156,6 +164,13 @@ export class Compositor {
         {},
         sourceTexture.flipped
       );
+    }
+
+    // Copy WebGL framebuffer to 2D recording canvas so captureStream()
+    // gets correctly-oriented pixels (GL stores row-0 at the bottom).
+    if (this.recordCtx) {
+      this.recordCtx.clearRect(0, 0, width, height);
+      this.recordCtx.drawImage(this.canvas, 0, 0);
     }
   }
 
@@ -218,6 +233,9 @@ export class Compositor {
       gl.deleteFramebuffer(this.fboB.framebuffer);
       gl.deleteTexture(this.fboB.texture);
     }
+    this.recordCtx = null;
+    this.recordCanvas.width = 0;
+    this.recordCanvas.height = 0;
     this.gl = null;
   }
 }

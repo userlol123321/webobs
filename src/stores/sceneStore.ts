@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Scene, Source, Rect, VideoFilter } from '../types';
+import type { Scene, Source, Transform, VideoFilter } from '../types';
 import { generateId } from '../utils/generate-id';
 
 interface SceneState {
@@ -22,7 +22,7 @@ interface SceneState {
   moveSource: (from: number, to: number) => void;
   toggleVisible: (sourceId: string) => void;
   toggleLocked: (sourceId: string) => void;
-  updateSourceTransform: (sourceId: string, rect: Partial<Rect>) => void;
+  updateSourceTransform: (sourceId: string, rect: Partial<Transform>) => void;
   setSelectedSources: (ids: string[]) => void;
 
   addFilter: (sourceId: string, filter: Omit<VideoFilter, 'id'>) => void;
@@ -176,7 +176,7 @@ export const useSceneStore = create<SceneState>((set, get) => ({
       return { sources: { ...state.sources, [sourceId]: { ...src, locked: !src.locked } } };
     }),
 
-  updateSourceTransform: (sourceId, rect) =>
+  updateSourceTransform: (sourceId, rect: Partial<Transform>) =>
     set((state) => {
       const src = state.sources[sourceId];
       if (!src) return state;
