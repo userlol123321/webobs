@@ -127,7 +127,8 @@ export function drawQuad(
   uniforms: ProgramUniforms = {},
   flipV = false,
   rotation = 0,
-  uv: UVRect = { u0: 0, v0: 0, u1: 1, v1: 1 }
+  uv: UVRect = { u0: 0, v0: 0, u1: 1, v1: 1 },
+  mirrorX = false
 ): void {
   gl.useProgram(program);
 
@@ -164,13 +165,21 @@ export function drawQuad(
 
   // Textures produced by a framebuffer are stored bottom-up relative to screen
   // space; flip v so they composite the right way round.
-  const base = flipV ? [0, 1, 1, 1, 0, 0, 1, 0] : [0, 0, 1, 0, 0, 1, 1, 1];
+  const base =
+    flipV ? [0, 1, 1, 1, 0, 0, 1, 0] : [0, 0, 1, 0, 0, 1, 1, 1];
   const texCoords = new Float32Array(
     base.map((coord, i) => {
-      const t = i % 2 === 0 ? uv.u0 + coord * (uv.u1 - uv.u0) : uv.v0 + coord * (uv.v1 - uv.v0);
+      const t =
+        i % 2 === 0 ? uv.u0 + coord * (uv.u1 - uv.u0) : uv.v0 + coord * (uv.v1 - uv.v0);
       return t;
     })
   );
+
+  if (mirrorX) {
+    for (let i = 0; i < texCoords.length; i += 2) {
+      texCoords[i] = 1 - texCoords[i];
+    }
+  }
 
   const posLoc = gl.getAttribLocation(program, 'a_position');
   const texLoc = gl.getAttribLocation(program, 'a_texCoord');

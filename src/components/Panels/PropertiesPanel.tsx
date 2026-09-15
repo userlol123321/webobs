@@ -58,6 +58,9 @@ export function PropertiesPanel() {
       cropBottom: 0,
     });
 
+  const toggleFlip = () =>
+    view.updateSourceTransform(source.id, { flipX: !(t.flipX ?? false) });
+
   return (
     <div className="properties">
       <div className="properties-header">
@@ -116,6 +119,15 @@ export function PropertiesPanel() {
         <button className="properties-action" onClick={centerBoth} title="Center both axes at current size">
           Center Both
         </button>
+        {source.type === 'screen' && (
+          <button
+            className={`properties-action ${t.flipX ? 'properties-action--active' : ''}`}
+            onClick={toggleFlip}
+            title="Mirror the screen capture left-to-right"
+          >
+            {t.flipX ? 'Flip: On' : 'Flip: Off'}
+          </button>
+        )}
       </div>
 
       {source.type === 'camera' && (

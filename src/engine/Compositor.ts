@@ -31,6 +31,7 @@ export interface RenderItem {
   height: number;
   opacity?: number;
   rotation?: number;
+  mirrorX?: boolean;
   uv?: UVRect;
   filters?: FilterSpec[];
 }
@@ -167,7 +168,8 @@ export class Compositor {
         {},
         sourceTexture.flipped,
         item.rotation ?? 0,
-        item.uv
+        item.uv,
+        item.mirrorX ?? false
       );
     }
 

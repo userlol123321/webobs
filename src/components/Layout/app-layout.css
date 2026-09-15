@@ -36,9 +36,6 @@
   flex: 1 1 0;
   min-height: 0;
 }
-.app-left > .dock:first-child {
-  flex: 0 0 38%;
-}
 
 .app-bottom {
   grid-area: bottom;

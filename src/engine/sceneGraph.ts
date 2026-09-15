@@ -71,6 +71,7 @@ export function buildSceneItems(ctx: SceneRenderContext): RenderItem[] {
       height: t.height,
       opacity: opacity ?? 1,
       rotation: t.rotation,
+      mirrorX: t.flipX ?? false,
       uv: cropUv(source, media),
       filters,
     });

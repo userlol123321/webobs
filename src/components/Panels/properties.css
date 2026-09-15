@@ -93,3 +93,8 @@
   background: var(--primary);
   color: #fff;
 }
+.properties-action--active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}

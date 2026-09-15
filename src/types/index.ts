@@ -33,6 +33,7 @@ export interface Transform {
   width: number;
   height: number;
   rotation: number;
+  flipX?: boolean;
   cropLeft: number;
   cropTop: number;
   cropRight: number;

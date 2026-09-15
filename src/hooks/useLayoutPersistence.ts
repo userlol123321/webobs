@@ -13,11 +13,22 @@ export function useLayoutPersistence(): void {
         saveLayout();
       }, 300);
     };
+    const flush = () => {
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+        timer = undefined;
+      }
+      saveLayout();
+    };
     const unsubScene = useSceneStore.subscribe(schedule);
     const unsubSettings = useSettingsStore.subscribe(schedule);
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', flush);
     return () => {
       unsubScene();
       unsubSettings();
+      window.removeEventListener('pagehide', flush);
+      window.removeEventListener('beforeunload', flush);
       if (timer !== undefined) window.clearTimeout(timer);
     };
   }, []);
