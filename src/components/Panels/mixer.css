@@ -1,0 +1,133 @@
+.mixer {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  padding: 8px 12px;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.mixer-empty {
+  color: var(--text-disabled);
+  font-size: 9pt;
+  padding: 12px 0;
+}
+
+.mixer-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 92px;
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.meter-db {
+  font-size: 8pt;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-track {
+  position: relative;
+  width: 8px;
+  height: 132px;
+  background: var(--bg-window);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 1px;
+  overflow: visible;
+}
+
+.meter-fill-zone {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.meter-fill-seg {
+  width: 100%;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.meter-fill-red {
+  background: var(--alert-hover);
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+.meter-fill-yellow {
+  background: var(--warn);
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+.meter-fill-green {
+  background: var(--success);
+}
+
+.meter-peak {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.65);
+  pointer-events: none;
+}
+
+.mixer-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.mixer-mute {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  background: var(--button-bg);
+  border: 1px solid var(--button-bg);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+.mixer-mute:hover {
+  background: var(--button-hover);
+}
+.mixer-mute--off {
+  background: var(--alert);
+  border-color: var(--alert);
+  color: #fff;
+}
+
+.mixer-volume {
+  height: 14px;
+}
+.mixer-volume::-webkit-slider-runnable-track {
+  height: 3.5px;
+}
+.mixer-volume::-webkit-slider-thumb {
+  width: 14px;
+  height: 9px;
+}
+
+.mixer-name {
+  max-width: 90px;
+  font-size: 9pt;
+  color: var(--text-light);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

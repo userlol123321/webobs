@@ -1,0 +1,173 @@
+/* --- Buttons --- */
+.obs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--button-height);
+  min-width: 60px;
+  padding: 0 12px;
+  background: var(--button-bg);
+  border: 1px solid var(--button-bg);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 9pt;
+  user-select: none;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.obs-btn:hover:not(:disabled) {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+.obs-btn:active:not(:disabled) {
+  background: var(--button-pressed);
+}
+.obs-btn:disabled {
+  background: var(--button-disabled);
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.obs-btn--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.obs-btn--primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.obs-btn--primary:active:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.obs-btn--danger {
+  background: var(--alert);
+  border-color: var(--alert);
+  color: #fff;
+}
+.obs-btn--danger:hover:not(:disabled) {
+  background: var(--alert-hover);
+}
+
+.obs-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-light);
+}
+.obs-btn--ghost:hover:not(:disabled) {
+  background: var(--button-hover);
+  color: var(--text);
+}
+
+/* --- Text / number inputs --- */
+.obs-input {
+  height: var(--input-height);
+  padding: 0 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--bg-input);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 9pt;
+  width: 100%;
+  transition: background 0.12s, border-color 0.12s;
+}
+.obs-input:hover {
+  border-color: var(--border-hover);
+}
+.obs-input:focus {
+  background: var(--bg-input-hover);
+  border-color: var(--primary);
+  outline: none;
+}
+.obs-input:disabled {
+  background: var(--button-disabled);
+  color: var(--text-disabled);
+}
+
+.obs-input--number::-webkit-outer-spin-button,
+.obs-input--number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --- Select --- */
+.obs-select {
+  height: var(--input-height);
+  padding: 0 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--bg-input);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 9pt;
+  cursor: pointer;
+  min-width: 60px;
+}
+.obs-select:hover {
+  border-color: var(--border-hover);
+}
+.obs-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* --- Number input with unit --- */
+.obs-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.obs-number .obs-input--number {
+  width: 72px;
+}
+.obs-number-unit {
+  color: var(--text-muted);
+  font-size: 9pt;
+}
+
+/* --- Range slider (OBS volume style) --- */
+.obs-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+.obs-slider::-webkit-slider-runnable-track {
+  height: 3.5px;
+  background: var(--bg-window);
+  border-radius: 2px;
+}
+.obs-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 10px;
+  border-radius: 4px;
+  background: #ffffff;
+  margin-top: -3.25px;
+  border: none;
+}
+.obs-slider::-webkit-slider-thumb:hover {
+  background: #c2c2c2;
+}
+.obs-slider::-webkit-slider-thumb:active {
+  background: #d6d6d6;
+}
+.obs-slider:focus::-webkit-slider-runnable-track {
+  background: var(--bg-window);
+}
+.obs-slider::-moz-range-track {
+  height: 3.5px;
+  background: var(--bg-window);
+  border-radius: 2px;
+}
+.obs-slider::-moz-range-thumb {
+  width: 18px;
+  height: 9px;
+  border-radius: 4px;
+  background: #ffffff;
+  border: none;
+}

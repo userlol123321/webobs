@@ -1,0 +1,46 @@
+.ctx-menu {
+  position: fixed;
+  z-index: var(--z-context-menu);
+  min-width: 180px;
+  background: var(--bg-window);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-light);
+  font-size: 9pt;
+  text-align: left;
+  cursor: pointer;
+}
+.ctx-item:hover:not(:disabled) {
+  background: var(--primary);
+  color: #fff;
+}
+.ctx-item:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.ctx-item-icon {
+  width: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctx-rule {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 6px;
+}

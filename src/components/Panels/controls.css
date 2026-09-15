@@ -1,0 +1,39 @@
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.controls-record {
+  min-height: 36px;
+  font-size: 10pt;
+}
+
+.controls-decorative {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.controls-label {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+}
+
+.controls-select {
+  height: 22px;
+  padding: 0 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 9pt;
+  width: 100%;
+}

@@ -1,0 +1,29 @@
+.stats {
+  padding: 10px 12px;
+  font-size: 9pt;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stat-label {
+  color: var(--text-light);
+}
+
+.stat-value {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-value--accent {
+  color: var(--warn);
+}

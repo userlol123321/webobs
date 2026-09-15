@@ -1,0 +1,151 @@
+/* ============================================================================
+   WebOBS Studio — OBS "Yami" Dark Theme
+   Pixel-perfect recreation of OBS Studio's default dark theme (QSS variables)
+   ========================================================================== */
+
+:root {
+  /* --- Surfaces --- */
+  --bg-window: #1d1f26;
+  --bg-base: #272a33;
+  --bg-preview: #13141a;
+  --bg-input: #3c404d;
+  --bg-input-hover: #1d1f26;
+
+  /* --- Primary (blue) --- */
+  --primary: #284cb8;
+  --primary-hover: #476bd7;
+  --primary-lighter: #718cdc;
+  --primary-dark: #213e97;
+  --primary-darker: #1a3278;
+
+  /* --- Buttons --- */
+  --button-bg: #3c404d;
+  --button-hover: #464b59;
+  --button-pressed: #1d1f26;
+  --button-disabled: #272a33;
+
+  /* --- Borders & separators --- */
+  --border: #3c404d;
+  --border-hover: #5b6273;
+  --border-highlight: rgb(42, 130, 218);
+  --border-inactive: rgb(25, 28, 34);
+
+  /* --- Text --- */
+  --text: #ffffff;
+  --text-light: rgb(214, 214, 214);
+  --text-muted: rgb(153, 153, 153);
+  --text-disabled: rgb(153, 153, 153);
+
+  /* --- Status colors --- */
+  --alert: #c01c37;
+  --alert-hover: #e33b57;
+  --warn: #b88a16;
+  --success: #25a231;
+
+  /* --- Meter (VU) colors --- */
+  --meter-green: #37d247;
+  --meter-green-bg: #17641e;
+  --meter-yellow: #e5af24;
+  --meter-yellow-bg: #6e520d;
+  --meter-red: #e33b57;
+  --meter-red-bg: #7d1224;
+
+  /* --- Transactional (recording/streaming active) --- */
+  --active: #284cb8;
+  --active-hover: #476bd7;
+
+  /* --- Metrics --- */
+  --radius: 4px;
+  --radius-sm: 2px;
+  --radius-lg: 6px;
+  --icon-size: 16px;
+  --icon-small: 14px;
+  --input-height: 30px;
+  --button-height: 22px;
+  --font-size: 10pt;
+  --font-family:
+    'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+
+  /* --- Grid layout (OBS default proportions) --- */
+  --left-dock-width: min(30vw, 280px);
+  --bottom-dock-height: 225px;
+  --mixer-width: 45%;
+  --transitions-width: 14%;
+  --controls-width: 16%;
+
+  /* --- Z-index scale --- */
+  --z-base: 1;
+  --z-dock-toolbar: 2;
+  --z-context-menu: 100;
+  --z-modal: 200;
+  --z-splash: 300;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-window);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* --- Scrollbars --- */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--button-bg);
+  border-radius: 4px;
+  border: 2px solid var(--bg-base);
+  min-height: 32px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--button-hover);
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* --- Focus rings --- */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 1px solid var(--primary-lighter);
+  outline-offset: -1px;
+}
+
+/* --- Number input arrows hidden --- */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

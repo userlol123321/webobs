@@ -1,0 +1,44 @@
+.app-error {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-splash);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-window);
+}
+
+.app-error-box {
+  width: 380px;
+  padding: 28px;
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.app-error-box h2 {
+  font-size: 13pt;
+  color: var(--alert-hover);
+  margin-bottom: 10px;
+}
+
+.app-error-box p {
+  font-size: 9.5pt;
+  color: var(--text-light);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.app-error-box button {
+  padding: 8px 20px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 10pt;
+  cursor: pointer;
+}
+.app-error-box button:hover {
+  background: var(--primary-hover);
+}

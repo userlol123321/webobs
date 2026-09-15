@@ -1,0 +1,57 @@
+.statusbar {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  background: var(--bg-base);
+  border-top: 1px solid var(--border);
+  padding: 0 10px;
+  gap: 4px;
+}
+
+.statusbar-message {
+  flex: 1;
+  color: var(--text-light);
+  font-size: 9pt;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.statusbar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-light);
+  font-size: 8.5pt;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.statusbar-item svg {
+  color: var(--text-muted);
+}
+
+.statusbar-rec {
+  color: var(--alert-hover);
+  font-weight: 700;
+}
+.statusbar-rec svg {
+  color: var(--alert);
+  animation: statusbar-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes statusbar-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.statusbar-warn {
+  color: var(--warn);
+}

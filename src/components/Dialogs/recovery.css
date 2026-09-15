@@ -1,0 +1,56 @@
+.recovery-loading {
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 9.5pt;
+  text-align: center;
+}
+
+.recovery-note {
+  font-size: 9pt;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.recovery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recovery-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.recovery-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recovery-name {
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recovery-meta {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+}
+
+.recovery-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}

@@ -1,0 +1,54 @@
+.properties {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.properties-empty {
+  padding: 16px 12px;
+  color: var(--text-disabled);
+  font-size: 9pt;
+  flex: 1;
+}
+
+.properties-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.properties-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.properties-label {
+  width: 44px;
+  font-size: 9pt;
+  color: var(--text-light);
+  flex: 0 0 auto;
+}
+
+.properties-title {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+
+.properties-reset {
+  margin-top: 8px;
+  align-self: flex-start;
+}
